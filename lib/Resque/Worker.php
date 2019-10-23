@@ -171,6 +171,10 @@ class Resque_Worker
 			}
 
 			if(!$job) {
+				if ($this->getTimestamp() != $this->startTimestamp) {
+					$this->shutdown = true;
+				}
+
 				// For an interval of 0, break now - helps with unit testing etc
 				if($interval == 0) {
 					break;
