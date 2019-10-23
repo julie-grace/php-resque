@@ -17,6 +17,7 @@ class Resque_Worker
 	const LOG_NONE = 0;
 	const LOG_NORMAL = 1;
 	const LOG_VERBOSE = 2;
+	const MANOBO_KEY = 'THELASTTIMECODEWASUPDATED';
 
 	/**
 	 * @var int Current log level of this worker.
@@ -142,6 +143,7 @@ class Resque_Worker
 		}
 		$this->hostname = $hostname;
 		$this->id = $this->hostname . ':'.getmypid() . ':' . implode(',', $this->queues);
+		$this->startTimestamp = $this->getTimestamp();
 	}
 
 	/**
@@ -220,6 +222,10 @@ class Resque_Worker
 
 			$this->child = null;
 			$this->doneWorking();
+
+			if ($this->getTimestamp() != $this->startTimestamp) {
+				$this->shutdown = true;
+			}
 		}
 
 		$this->unregisterWorker();
@@ -580,6 +586,11 @@ class Resque_Worker
 	public function getStat($stat)
 	{
 		return Resque_Stat::get($stat . ':' . $this);
+	}
+
+	public function getTimestamp()
+	{
+		return \Resque::redis()->get(self::MANOBO_KEY);
 	}
 }
 ?>
