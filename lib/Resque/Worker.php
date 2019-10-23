@@ -590,7 +590,7 @@ class Resque_Worker
 
 	public function getTimestamp()
 	{
-		return \Resque::redis()->get(self::MANOBO_KEY);
+		return \Resque::redis()->get(self::MANOBO_KEY . $_SERVER['SERVER_NAME']);
 	}
 }
 ?>
